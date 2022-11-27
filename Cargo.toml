@@ -1,0 +1,49 @@
+[package]
+name = "my_aoc2022"
+version = "0.1.0"
+edition = "2021"
+default-run = "my_aoc2022"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+itertools = "0.10.3"
+regex = "1.6.0"
+lazy_static = "1.4"
+lazy-regex = "2.3.0"
+
+[[bin]]
+name = "day01"
+path = "src/day01.rs"
+
+[[bin]]
+name = "day02"
+path = "src/day02.rs"
+
+[[bin]]
+name = "day03"
+path = "src/day03.rs"
+
+[[bin]]
+name = "day04"
+path = "src/day04.rs"
+
+[[bin]]
+name = "day05"
+path = "src/day05.rs"
+
+[[bin]]
+name = "day06"
+path = "src/day06.rs"
+
+[[bin]]
+name = "day07"
+path = "src/day07.rs"
+
+[[bin]]
+name = "day08"
+path = "src/day08.rs"
+
+[[bin]]
+name = "day09"
+path = "src/day09.rs"
