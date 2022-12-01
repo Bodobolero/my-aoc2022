@@ -1,4 +1,4 @@
-use my_aoc2020::{day01, day02, day03, day04, day05, day06, day07, day08};
+use my_aoc2022::{day01, day02, day03, day04, day05, day06, day07, day08};
 fn main() {
     let solutions = [
         day01::main,
