@@ -28,12 +28,11 @@ cargo bench
 |                       | Problem                                            | Part 1   | Part 2   |   
 |-----------------------|----------------------------------------------------|----------|----------|
 | [Day 1](src/day01.rs) | [Problem 1](https://adventofcode.com/2022/day/1)   |    69 ms |    79 ms |   
-| [Day 2](src/day02.rs) | [Problem 2](https://adventofcode.com/2022/day/2)   |  N/A  ms |  N/A  ms |   
+| [Day 2](src/day02.rs) | [Problem 2](https://adventofcode.com/2022/day/2)   |   105 ms |   106 ms |   
 | [Day 3](src/day03.rs) | [Problem 3](https://adventofcode.com/2022/day/3)   |  N/A  ms |  N/A  ms | 
 | [Day 4](src/day04.rs) | [Problem 4](https://adventofcode.com/2022/day/4)   |  N/A  ms |  N/A  ms | 
 | [Day 5](src/day05.rs) | [Problem 5](https://adventofcode.com/2022/day/5)   |  N/A  ms |  N/A  ms | 
 | [Day 6](src/day06.rs) | [Problem 6](https://adventofcode.com/2022/day/6)   |  N/A  ms |  N/A  ms | 
-| [Day 6](src/day06.rs) | [Tim Visee](https://adventofcode.com/2022/day/6)   |  N/A  ms |  N/A  ms |
 | [Day 7](src/day07.rs) | [Problem 7](https://adventofcode.com/2022/day/7)   |  N/A  ms |  N/A  ms |
 | [Day 8](src/day08.rs) | [Problem 8](https://adventofcode.com/2022/day/8)   |  N/A  ms |  N/A  ms |
 | [Day 9](src/day09.rs) | [Problem 9](https://adventofcode.com/2022/day/9)   |  N/A  ms |  N/A  ms |
