@@ -1,4 +1,15 @@
-use my_aoc2022::{day01, day02, day03, day04, day05, day06, day07, day08};
+#![feature(test)]
+#![feature(int_log)]
+mod day01;
+mod day02;
+mod day03;
+mod day04;
+mod day05;
+mod day06;
+mod day07;
+mod day08;
+mod day09;
+
 fn main() {
     let solutions = [
         day01::main,
@@ -9,6 +20,7 @@ fn main() {
         day06::main,
         day07::main,
         day08::main,
+        day09::main,
     ];
     for (day, solution) in solutions.iter().enumerate() {
         println!("------ Day {} ------", day + 1);
