@@ -9,7 +9,11 @@ const INPUT: &str = include_str!("../inputs/input03.txt");
 // Lowercase item types a through z have priorities 1 through 26.
 // Uppercase item types A through Z have priorities 27 through 52.
 fn codechar(c: u8) -> u32 {
-    (if c > 90 { c - 96 } else { c - 38 }) as u32
+    if c >= 'a' as u8 && c <= 'z' as u8 {
+        (c - 'a' as u8 + 1) as u32
+    } else {
+        (c - 'A' as u8 + 27) as u32
+    }
 }
 
 fn part1() -> u32 {
