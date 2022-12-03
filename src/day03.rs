@@ -26,7 +26,7 @@ fn part1() -> u32 {
             let content1: u64 = c1.fold(0u64, |sum, c| sum | (1u64 << codechar(c)));
             // find redundant bit in compartment 2
             codechar(
-                c2.find(|c| (content1 & (1u64 << codechar(*c))) > 0)
+                c2.find(|&c| (content1 & (1u64 << codechar(c))) > 0)
                     .unwrap(),
             )
         })
