@@ -1,5 +1,6 @@
 #![feature(test)]
 #![feature(array_windows)]
+#![feature(int_log)]
 
 extern crate test;
 

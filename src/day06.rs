@@ -2,10 +2,7 @@
 
 extern crate test;
 
-use itertools::Itertools;
-use std::collections::HashSet;
-
-const INPUT: &str = include_str!("../inputs/input06.txt");
+const _INPUT: &str = include_str!("../inputs/input06.txt");
 
 fn part1() -> u32 {
     0

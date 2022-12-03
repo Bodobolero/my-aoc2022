@@ -10,7 +10,7 @@ const INPUT: &str = include_str!("../inputs/input03.txt");
 // Lowercase item types a through z have priorities 1 through 26.
 // Uppercase item types A through Z have priorities 27 through 52.
 fn codechar(c: u8) -> u32 {
-    if c >= b'a' && c <= b'z' {
+    if (b'a'..=b'z').contains(&c) {
         (c - b'a' + 1) as u32
     } else {
         (c - b'A' + 27) as u32
@@ -50,7 +50,7 @@ fn part2() -> u32 {
                 // bitand all 3 lines bits to find common ones
                 .fold(std::u64::MAX, |acc, content| acc & content)
         })
-        .map(|mut bits| bits.trailing_zeros())
+        .map(|bits| bits.ilog2())
         .sum()
 }
 

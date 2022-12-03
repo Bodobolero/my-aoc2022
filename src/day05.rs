@@ -1,10 +1,8 @@
 #![feature(test)]
 
-use itertools::Itertools;
-
 extern crate test;
 
-const INPUT: &str = include_str!("../inputs/input05.txt");
+const _INPUT: &str = include_str!("../inputs/input05.txt");
 
 fn part1() -> u32 {
     0

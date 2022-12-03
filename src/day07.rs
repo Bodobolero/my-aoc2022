@@ -1,17 +1,8 @@
 #![feature(test)]
 
-use regex::Regex;
-use std::collections::HashMap;
-use std::collections::HashSet;
-
-lazy_static::lazy_static! {
-    static ref RE_RULE: Regex = Regex::new(r"^([a-z ]+) bags contain(.*)$").unwrap();
-    static ref RE_CONT: Regex = Regex::new(r" (\d+) ([a-z ]+) bag").unwrap();
-}
-
 extern crate test;
 
-const INPUT: &str = include_str!("../inputs/input07.txt");
+const _INPUT: &str = include_str!("../inputs/input07.txt");
 
 fn part1() -> u32 {
     0

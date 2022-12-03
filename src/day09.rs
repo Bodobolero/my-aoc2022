@@ -1,7 +1,7 @@
 #![feature(test)]
 
 extern crate test;
-const INPUT: &str = include_str!("../inputs/input09.txt");
+const _INPUT: &str = include_str!("../inputs/input09.txt");
 
 fn part1() -> u32 {
     0
