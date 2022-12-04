@@ -12,28 +12,12 @@ const INPUT: &str = include_str!("../inputs/input04.txt");
 
 fn contains(a1: usize, a2: usize, b1: usize, b2: usize) -> bool {
     let i1 = a1..=a2;
-    let i2 = b1..=b2;
-    for b in i2 {
-        if !i1.contains(&b) {
-            //println!("{}-{} does not contain {}-{}", a1, a2, b1, b2);
-            return false;
-        }
-    }
-    //println!("{}-{} contains {}-{}", a1, a2, b1, b2);
-    true
+    i1.contains(&b1) && i1.contains(&b2)
 }
 
 fn overlaps(a1: usize, a2: usize, b1: usize, b2: usize) -> bool {
     let i1 = a1..=a2;
-    let i2 = b1..=b2;
-    for b in i2 {
-        if i1.contains(&b) {
-            // println!("{}-{} does overlap {}-{}", a1, a2, b1, b2);
-            return true;
-        }
-    }
-    // println!("{}-{} does not overlap {}-{}", a1, a2, b1, b2);
-    false
+    i1.contains(&b1) || i1.contains(&b2)
 }
 
 fn part1() -> usize {
