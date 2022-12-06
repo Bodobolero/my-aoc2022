@@ -48,11 +48,11 @@ mod tests {
 
     #[test]
     fn part1_test() {
-        assert_eq!(part1(), 7);
+        assert_eq!(part1(), 1262);
     }
     #[test]
     fn part2_test() {
-        assert_eq!(part2(), 0);
+        assert_eq!(part2(), 3444);
     }
     #[bench]
     fn part1_bench(b: &mut Bencher) {

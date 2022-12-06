@@ -32,7 +32,7 @@ cargo bench
 | [Day 3](src/day03.rs) | [Problem 3](https://adventofcode.com/2022/day/3)   | 0.054 ms | 0.026 ms | 
 | [Day 4](src/day04.rs) | [Problem 4](https://adventofcode.com/2022/day/4)   | 0.569 ms | 0.563 ms | 
 | [Day 5](src/day05.rs) | [Problem 5](https://adventofcode.com/2022/day/5)   | 0.340 ms | 0.423 ms | 
-| [Day 6](src/day06.rs) | [Problem 6](https://adventofcode.com/2022/day/6)   |  N/A  ms |  N/A  ms | 
+| [Day 6](src/day06.rs) | [Problem 6](https://adventofcode.com/2022/day/6)   | 0.208 ms | 0.928 ms | 
 | [Day 7](src/day07.rs) | [Problem 7](https://adventofcode.com/2022/day/7)   |  N/A  ms |  N/A  ms |
 | [Day 8](src/day08.rs) | [Problem 8](https://adventofcode.com/2022/day/8)   |  N/A  ms |  N/A  ms |
 | [Day 9](src/day09.rs) | [Problem 9](https://adventofcode.com/2022/day/9)   |  N/A  ms |  N/A  ms |
