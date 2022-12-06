@@ -2,13 +2,37 @@
 
 extern crate test;
 
-const _INPUT: &str = include_str!("../inputs/input06.txt");
+use std::collections::HashSet;
 
-fn part1() -> u32 {
+const INPUT: &str = include_str!("../inputs/input06.txt");
+
+fn part1() -> usize {
+    for i in 0..INPUT.as_bytes().len() - 3 {
+        let mut set: HashSet<u8> = HashSet::new();
+        for j in 0..4 {
+            if !set.insert(INPUT.as_bytes()[i + j]) {
+                break;
+            }
+        }
+        if set.len() == 4 {
+            return i + 4;
+        }
+    }
     0
 }
 
-fn part2() -> u32 {
+fn part2() -> usize {
+    for i in 0..INPUT.as_bytes().len() - 3 {
+        let mut set: HashSet<u8> = HashSet::new();
+        for j in 0..14 {
+            if !set.insert(INPUT.as_bytes()[i + j]) {
+                break;
+            }
+        }
+        if set.len() == 14 {
+            return i + 14;
+        }
+    }
     0
 }
 
@@ -24,7 +48,7 @@ mod tests {
 
     #[test]
     fn part1_test() {
-        assert_eq!(part1(), 0);
+        assert_eq!(part1(), 7);
     }
     #[test]
     fn part2_test() {
