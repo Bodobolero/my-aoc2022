@@ -11,6 +11,7 @@ const NEEDEDSPACE: usize = 30000000;
 
 // since rust doesn't easily allow tree preserving parent and child references
 // we instead store all dirs in a vec and just the vec indexes in the parent child members of the struct
+// see https://www.reddit.com/r/rust/comments/cnjhup/idiomatic_way_to_reference_parent_struct/
 #[derive(Debug)]
 struct Dir {
     index: usize,
