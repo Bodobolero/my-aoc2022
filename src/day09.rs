@@ -24,6 +24,7 @@ fn follow(head: (i32, i32), tail: (i32, i32)) -> (i32, i32) {
         return (tail.0 + (head.0 - tail.0) / 2, head.1);
     }
     // new moves in part 2
+    // here we have a distance of 2 in x and y
     if (head.0 - tail.0).abs() == 2 && (head.1 - tail.1).abs() == 2 {
         return (
             tail.0 + (head.0 - tail.0) / 2,
