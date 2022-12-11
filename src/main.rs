@@ -1,5 +1,6 @@
 #![feature(test)]
 #![feature(int_log)]
+#![feature(box_syntax)]
 mod day01;
 mod day02;
 mod day03;
