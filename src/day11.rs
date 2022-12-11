@@ -33,19 +33,18 @@ fn mult2(x: usize, _: usize) -> usize {
     x * x
 }
 
-fn parseMonkeys(input: &str) -> Vec<Monkey> {
+fn parse_monkeys() -> Vec<Monkey> {
     let mut monkeys: Vec<Monkey> = Vec::new();
-    for (count, m) in INPUT.split("\n\n").enumerate() {
+    for m in INPUT.split("\n\n") {
         // skip line "Monkey x:"
         let mut lines = m.lines().skip(1);
         let items: Vec<usize> = lines
             .next()
             .unwrap()
             .split(':')
-            .skip(1)
-            .next()
+            .nth(1)
             .unwrap()
-            .split(",")
+            .split(',')
             .map(|s| s.trim())
             .map(|i| i.parse::<usize>().unwrap())
             .collect_vec();
@@ -54,8 +53,7 @@ fn parseMonkeys(input: &str) -> Vec<Monkey> {
             .next()
             .unwrap()
             .split(':')
-            .skip(1)
-            .next()
+            .nth(1)
             .unwrap()
             .split(' ')
             .skip(4);
@@ -84,7 +82,7 @@ fn parseMonkeys(input: &str) -> Vec<Monkey> {
         let div = lines
             .next()
             .unwrap()
-            .split(" ")
+            .split(' ')
             .last()
             .unwrap()
             .parse::<usize>()
@@ -92,7 +90,7 @@ fn parseMonkeys(input: &str) -> Vec<Monkey> {
         let true_target = lines
             .next()
             .unwrap()
-            .split(" ")
+            .split(' ')
             .last()
             .unwrap()
             .parse::<usize>()
@@ -100,7 +98,7 @@ fn parseMonkeys(input: &str) -> Vec<Monkey> {
         let false_target = lines
             .next()
             .unwrap()
-            .split(" ")
+            .split(' ')
             .last()
             .unwrap()
             .parse::<usize>()
@@ -119,10 +117,10 @@ fn parseMonkeys(input: &str) -> Vec<Monkey> {
 }
 
 fn part1() -> usize {
-    let mut monkeys = parseMonkeys(INPUT);
+    let mut monkeys = parse_monkeys();
     // println!("Monkeys {:?}", monkeys);
     // rounds
-    for round in 0..20 {
+    for _ in 0..20 {
         // turns
         for i in 0..monkeys.len() {
             let mut targets: Vec<(usize, usize)> = Vec::new();
@@ -148,17 +146,23 @@ fn part1() -> usize {
 }
 
 fn part2() -> usize {
-    let mut monkeys = parseMonkeys(INPUT);
+    let mut monkeys = parse_monkeys();
+    // if I divide the item by the product of all tests' divisors the divisibility
+    // test is the same on the mod of the division
+    let mut product_of_tests = 1;
+    for i in 0..monkeys.len() {
+        product_of_tests *= monkeys[i].div;
+    }
     // println!("Monkeys {:?}", monkeys);
     // rounds
-    for round in 0..10000 {
+    for _ in 0..10000 {
         // turns
         for i in 0..monkeys.len() {
             let mut targets: Vec<(usize, usize)> = Vec::new();
             let monkey = &monkeys[i];
             // items
             for item in &monkey.items {
-                let worrylevel = (monkey.operation)(*item, monkey.operand) / 3;
+                let worrylevel = (monkey.operation)(*item, monkey.operand) % product_of_tests;
                 let target = match worrylevel % monkey.div == 0 {
                     true => monkey.true_target,
                     false => monkey.false_target,
@@ -192,7 +196,7 @@ mod tests {
     }
     #[test]
     fn part2_test() {
-        assert_eq!(part2(), 2713310158);
+        assert_eq!(part2(), 14952185856);
     }
     #[bench]
     fn part1_bench(b: &mut Bencher) {
