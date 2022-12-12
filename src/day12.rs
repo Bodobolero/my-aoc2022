@@ -29,8 +29,8 @@ fn part1() -> usize {
     let directions = [(0, 1), (0, -1), (1, 0), (-1, 0)];
     let mut pathlen = 0;
     loop {
-        println!("pathlen: {} next points: {:?}", pathlen, points);
-        if points.len() == 0 {
+        // println!("pathlen: {} next points: {:?}", pathlen, points);
+        if points.is_empty() {
             break;
         }
         pathlen += 1;
@@ -78,7 +78,7 @@ mod tests {
 
     #[test]
     fn part1_test() {
-        assert_eq!(part1(), 31);
+        assert_eq!(part1(), 408);
     }
     #[test]
     fn part2_test() {
