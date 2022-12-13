@@ -5,46 +5,51 @@ use itertools::Itertools;
 extern crate test;
 const INPUT: &str = include_str!("../inputs/input13.txt");
 
-#[derive(Debug)]
-enum elem {
-    val(usize),
-    list(Vec<elem>),
+const INPUT2: &str = "[[2]]\n[[6]]";
+
+#[derive(Debug, PartialEq)]
+enum Elem {
+    Val(usize),
+    List(Vec<Elem>),
 }
 
-fn parse(list_str: &str) -> (Option<elem>, &str) {
-    match list_str.chars().nth(0).unwrap() {
+fn parse(list_str: &str) -> (Option<Elem>, &str) {
+    match list_str.chars().next().unwrap() {
         '[' => {
-            let mut list: Vec<elem> = Vec::new();
+            let mut list: Vec<Elem> = Vec::new();
             let (mut element, mut rest) = parse(&list_str[1..]);
             while element.is_some() {
                 list.push(element.unwrap());
-                if rest.chars().nth(0).unwrap() != ',' {
+                if !rest.starts_with(',') {
                     break;
                 }
                 (element, rest) = parse(&rest[1..]);
             }
-            (Some(elem::list(list)), &rest[1..])
+            (Some(Elem::List(list)), &rest[1..])
         }
-        ']' => (None, &list_str),
+        ']' => (None, list_str),
         _ => {
             // parse integer part
             // find first non-digit
-            let (pos, _) = list_str.chars().find_position(|c| !c.is_digit(10)).unwrap();
+            let (pos, _) = list_str
+                .chars()
+                .find_position(|c| !c.is_ascii_digit())
+                .unwrap();
             let val = list_str[0..pos].parse::<usize>().unwrap();
-            (Some(elem::val(val)), &list_str[pos..])
+            (Some(Elem::Val(val)), &list_str[pos..])
         }
     }
 }
 
-fn compare(e1: &elem, e2: &elem) -> bool {
+fn compare(e1: &Elem, e2: &Elem) -> bool {
     match (e1, e2) {
-        (elem::val(val1), elem::val(val2)) => {
-            println!("Compare [{}] vs [{}] is {}", val1, val2, val1 < val2);
+        (Elem::Val(val1), Elem::Val(val2)) => {
+            // println!("Compare [{}] vs [{}] is {}", val1, val2, val1 < val2);
             val1 < val2
         }
-        (elem::list(l1), elem::list(l2)) => {
-            for (index, l1_item) in l1.into_iter().enumerate() {
-                let l2_item = l2.into_iter().nth(index);
+        (Elem::List(l1), Elem::List(l2)) => {
+            for (index, l1_item) in l1.iter().enumerate() {
+                let l2_item = l2.get(index);
                 if l2_item.is_none() {
                     return false;
                 }
@@ -60,17 +65,14 @@ fn compare(e1: &elem, e2: &elem) -> bool {
             }
             false
         }
-        (elem::val(val1), elem::list(_)) => {
-            let mut list: Vec<elem> = Vec::new();
-            list.push(elem::val(*val1));
-            compare(&elem::list(list), e2)
+        (Elem::Val(val1), Elem::List(_)) => {
+            let list = vec![Elem::Val(*val1)];
+            compare(&Elem::List(list), e2)
         }
-        (elem::list(l1), elem::val(val2)) => {
-            let mut list: Vec<elem> = Vec::new();
-            list.push(elem::val(*val2));
-            compare(e1, &elem::list(list))
+        (Elem::List(_), Elem::Val(val2)) => {
+            let list = vec![Elem::Val(*val2)];
+            compare(e1, &Elem::List(list))
         }
-        _ => panic!("case not considered"),
     }
 }
 fn part1() -> usize {
@@ -84,21 +86,57 @@ fn part1() -> usize {
             let (right, _) = parse(pair_lines.next().unwrap());
             let left = left.unwrap();
             let right = right.unwrap();
-            println!("left: {:?}", left);
-            println!("right: {:?}\n", right);
+            // println!("left: {:?}", left);
+            // println!("right: {:?}\n", right);
             (index, left, right)
         })
-        .filter(|(index, left, right)| {
-            let result = compare(left, right);
-            println!("Index {} result {}", index, result);
-            result
-        })
+        .filter(|(_, left, right)| compare(left, right))
         .map(|(index, _, _)| index)
         .sum::<usize>()
 }
 
+fn comp(e1: &Elem, e2: &Elem) -> core::cmp::Ordering {
+    if compare(e1, e2) {
+        return core::cmp::Ordering::Less;
+    };
+    if compare(e2, e1) {
+        return core::cmp::Ordering::Greater;
+    }
+    core::cmp::Ordering::Equal
+}
+
 fn part2() -> usize {
-    0
+    let additional1 = INPUT2.lines().map(|line| {
+        let (item, _) = parse(line);
+        item.unwrap()
+    });
+    let mut additional2 = INPUT2.lines().map(|line| {
+        let (item, _) = parse(line);
+        item.unwrap()
+    });
+    let a1 = additional2.next().unwrap();
+    let a2 = additional2.next().unwrap();
+    INPUT
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(|line| {
+            let (item, _) = parse(line);
+            item.unwrap()
+        })
+        .chain(additional1)
+        .sorted_by(comp)
+        .enumerate()
+        .filter(|(_, elem)| {
+            if comp(&a1, elem) == core::cmp::Ordering::Equal {
+                return true;
+            }
+            if comp(&a2, elem) == core::cmp::Ordering::Equal {
+                return true;
+            }
+            false
+        })
+        .map(|(nth, _)| nth + 1)
+        .product::<usize>()
 }
 
 pub fn main() {
@@ -117,7 +155,7 @@ mod tests {
     }
     #[test]
     fn part2_test() {
-        assert_eq!(part2(), 0);
+        assert_eq!(part2(), 26712);
     }
     #[bench]
     fn part1_bench(b: &mut Bencher) {
