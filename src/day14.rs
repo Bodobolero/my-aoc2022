@@ -193,8 +193,8 @@ fn part2() -> usize {
             continue 'outer;
         }
     }
-    // println!("Grid with {} corns of sand:", sand);
-    // printGrid(&grid);
+    println!("Grid with {} corns of sand:", sand);
+    print_grid(&grid);
     sand
 }
 
