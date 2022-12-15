@@ -119,7 +119,7 @@ fn part2() -> usize {
             break 'outer;
         }
     }
-    println!("find x:{} y:{}", sol_x, sol_y);
+    // println!("found x:{} y:{}", sol_x, sol_y);
 
     4000000usize * (sol_x as usize) + (sol_y as usize)
 }
