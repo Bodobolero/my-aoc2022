@@ -4,6 +4,7 @@ extern crate test;
 const INPUT: &str = include_str!("../inputs/input15.txt");
 
 const LINE: i32 = 2000000;
+const BOUND: i32 = 4000000;
 
 use regex::Regex;
 use std::collections::HashSet;
@@ -59,7 +60,68 @@ fn part1() -> usize {
 }
 
 fn part2() -> usize {
-    0
+    // compute vector of sensors and the manhattan distance of all points impossible
+    let sensors_beacons: Vec<(i32, i32, i32, i32)> = INPUT
+        .lines()
+        .map(|line| {
+            let caps = RE_RULE.captures(line).unwrap();
+            (
+                caps.get(1).unwrap().as_str().parse::<i32>().unwrap(),
+                caps.get(2).unwrap().as_str().parse::<i32>().unwrap(),
+                caps.get(3).unwrap().as_str().parse::<i32>().unwrap(),
+                caps.get(4).unwrap().as_str().parse::<i32>().unwrap(),
+            )
+        })
+        .collect();
+    let sensors_range: Vec<(i32, i32, i32)> = sensors_beacons
+        .iter()
+        .map(|(sx, sy, bx, by)| {
+            // compute manhattan distance of beacon
+            (*sx, *sy, (bx - sx).abs() + (by - sy).abs())
+        })
+        .collect();
+
+    // for each sensor find the first point that overlaps its range and the last point
+    // skip all points in betwen to be faster
+    let (mut sol_x, mut sol_y) = (0i32, 0i32);
+
+    'outer: for y in 0..BOUND + 1 {
+        let mut ranges: Vec<(i32, i32)> = Vec::new();
+        for (sx, sy, range) in &sensors_range {
+            if (y - *sy).abs() > *range {
+                // sensor area does not touch line
+                continue;
+            }
+            // sensor touches the following line range:
+            let xdelta = range - (y - *sy).abs();
+            let xmin = *sx - xdelta;
+            let xmax = *sx + xdelta;
+            ranges.push((xmin, xmax));
+        }
+        ranges.sort();
+        // println!("line {} has ranges {:?}", y, ranges);
+        let mut pos = 0;
+        for (x1, x2) in ranges {
+            if pos < x1 {
+                // found it
+                sol_x = pos;
+                sol_y = y;
+                break 'outer;
+            }
+            if pos <= x2 {
+                pos = x2 + 1;
+            }
+        }
+        if pos <= BOUND {
+            // found it
+            sol_x = pos;
+            sol_y = y;
+            break 'outer;
+        }
+    }
+    println!("find x:{} y:{}", sol_x, sol_y);
+
+    4000000usize * (sol_x as usize) + (sol_y as usize)
 }
 
 pub fn main() {
@@ -74,11 +136,11 @@ mod tests {
 
     #[test]
     fn part1_test() {
-        assert_eq!(part1(), 26);
+        assert_eq!(part1(), 4951427);
     }
     #[test]
     fn part2_test() {
-        assert_eq!(part2(), 0);
+        assert_eq!(part2(), 13029714573243);
     }
     #[bench]
     fn part1_bench(b: &mut Bencher) {
