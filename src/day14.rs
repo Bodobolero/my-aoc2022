@@ -9,24 +9,18 @@ lazy_static::lazy_static! {
     static ref RE_POINT: Regex = Regex::new(r"(\d+),(\d+)").unwrap();
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Copy)]
+#[repr(u8)]
 enum Mode {
-    A,
-    R,
-    S,
+    Air = b'.',
+    Rock = b'#',
+    Sand = b'o',
 }
 
 fn print_grid(grid: &Vec<Vec<Mode>>) {
     for line in grid {
         for pos in line {
-            print!(
-                "{}",
-                match pos {
-                    Mode::A => '.',
-                    Mode::R => '#',
-                    Mode::S => 'o',
-                }
-            );
+            print!("{}", *pos as u8 as char);
         }
         println!();
     }
@@ -66,7 +60,7 @@ fn part1() -> usize {
         .max()
         .unwrap();
     // println!("x: {}..={} y: 0..{}", xmin, xmax, ymax);
-    let mut grid: Vec<Vec<Mode>> = vec![vec![Mode::A; xmax - xmin + 3]; ymax + 2];
+    let mut grid: Vec<Vec<Mode>> = vec![vec![Mode::Air; xmax - xmin + 3]; ymax + 2];
     // draw rocks
     for points in linepoints {
         for i in 1..points.len() {
@@ -79,7 +73,7 @@ fn part1() -> usize {
             // printGrid(&grid);
             let step = (usize::from(end.0 > pos.0), usize::from(end.1 > pos.1));
             while pos.0 <= end.0 && pos.1 <= end.1 {
-                grid[pos.1][pos.0 - xmin + 1] = Mode::R;
+                grid[pos.1][pos.0 - xmin + 1] = Mode::Rock;
                 pos = (pos.0 + step.0, pos.1 + step.1);
             }
         }
@@ -91,19 +85,19 @@ fn part1() -> usize {
     'outer: loop {
         let mut pos = (500 - xmin + 1, 0);
         while pos.1 <= ymax {
-            if grid[pos.1 + 1][pos.0] == Mode::A {
+            if grid[pos.1 + 1][pos.0] == Mode::Air {
                 pos = (pos.0, pos.1 + 1);
                 continue;
             }
-            if pos.0 > 0 && grid[pos.1 + 1][pos.0 - 1] == Mode::A {
+            if pos.0 > 0 && grid[pos.1 + 1][pos.0 - 1] == Mode::Air {
                 pos = (pos.0 - 1, pos.1 + 1);
                 continue;
             }
-            if pos.0 < xmax + 2 && grid[pos.1 + 1][pos.0 + 1] == Mode::A {
+            if pos.0 < xmax + 2 && grid[pos.1 + 1][pos.0 + 1] == Mode::Air {
                 pos = (pos.0 + 1, pos.1 + 1);
                 continue;
             }
-            grid[pos.1][pos.0] = Mode::S;
+            grid[pos.1][pos.0] = Mode::Sand;
             sand += 1;
 
             continue 'outer;
@@ -142,7 +136,7 @@ fn part2() -> usize {
     let xmax = 500 + ymax + 1;
 
     // println!("x: {}..={} y: 0..{}", xmin, xmax, ymax);
-    let mut grid: Vec<Vec<Mode>> = vec![vec![Mode::A; xmax - xmin]; ymax];
+    let mut grid: Vec<Vec<Mode>> = vec![vec![Mode::Air; xmax - xmin]; ymax];
     // draw rocks
     for points in linepoints {
         for i in 1..points.len() {
@@ -155,14 +149,14 @@ fn part2() -> usize {
             // printGrid(&grid);
             let step = (usize::from(end.0 > pos.0), usize::from(end.1 > pos.1));
             while pos.0 <= end.0 && pos.1 <= end.1 {
-                grid[pos.1][pos.0 - xmin] = Mode::R;
+                grid[pos.1][pos.0 - xmin] = Mode::Rock;
                 pos = (pos.0 + step.0, pos.1 + step.1);
             }
         }
     }
     // draw bottom line
     for i in 0..grid[ymax - 1].len() {
-        grid[ymax - 1][i] = Mode::R;
+        grid[ymax - 1][i] = Mode::Rock;
     }
     // println!("Grid after drawing all lines");
     // printGrid(&grid);
@@ -170,23 +164,23 @@ fn part2() -> usize {
     let mut sand: usize = 0;
     'outer: loop {
         let mut pos = (500 - xmin + 1, 0);
-        if grid[pos.1][pos.0] == Mode::S {
+        if grid[pos.1][pos.0] == Mode::Sand {
             break;
         }
         while pos.1 < ymax {
-            if grid[pos.1 + 1][pos.0] == Mode::A {
+            if grid[pos.1 + 1][pos.0] == Mode::Air {
                 pos = (pos.0, pos.1 + 1);
                 continue;
             }
-            if pos.0 > 0 && grid[pos.1 + 1][pos.0 - 1] == Mode::A {
+            if pos.0 > 0 && grid[pos.1 + 1][pos.0 - 1] == Mode::Air {
                 pos = (pos.0 - 1, pos.1 + 1);
                 continue;
             }
-            if pos.0 < xmax + 2 && grid[pos.1 + 1][pos.0 + 1] == Mode::A {
+            if pos.0 < xmax + 2 && grid[pos.1 + 1][pos.0 + 1] == Mode::Air {
                 pos = (pos.0 + 1, pos.1 + 1);
                 continue;
             }
-            grid[pos.1][pos.0] = Mode::S;
+            grid[pos.1][pos.0] = Mode::Sand;
             sand += 1;
             // println!("Grid with {} corns of sand:", sand);
             // printGrid(&grid);
