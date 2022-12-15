@@ -104,7 +104,7 @@ fn part1() -> usize {
         }
         break 'outer;
     }
-    println!("Grid with {} corns of sand:", sand);
+    println!("Grid with {sand} corns of sand:");
     print_grid(&grid);
     sand
 }
@@ -187,7 +187,7 @@ fn part2() -> usize {
             continue 'outer;
         }
     }
-    println!("Grid with {} corns of sand:", sand);
+    println!("Grid with {sand} corns of sand:");
     print_grid(&grid);
     sand
 }
