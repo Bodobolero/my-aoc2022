@@ -38,20 +38,28 @@ fn parse_valves(input: &str) -> HashMap<&str, Valve> {
     valves
 }
 
-fn step(
+fn step<'a>(
     minutes: usize,
     ppm: usize,
     pt: usize,
-    current: &str,
-    valves: &HashMap<&str, Valve>,
+    current: &'a str,
+    valves: &'a HashMap<&str, Valve>,
     open_valves: HashSet<&str>,
     results: &mut Vec<usize>,
+    best_path: &mut HashMap<(&'a str, usize), usize>,
 ) {
     if minutes == 0 {
-        println!("{:?}", pt);
+        // println!("{} {}", pt, ppm);
         results.push(pt);
     } else {
         let new_pt = pt + ppm;
+        let best = best_path.get(&(current, minutes));
+        if best.is_some() && *best.unwrap() > new_pt {
+            return;
+        }
+        let entry = best_path.entry((current, minutes)).or_insert(new_pt);
+        *entry = new_pt;
+
         let valve = valves.get(current).unwrap();
         for target in &valve.target_valves {
             step(
@@ -62,6 +70,7 @@ fn step(
                 valves,
                 open_valves.clone(),
                 results,
+                best_path,
             );
         }
         // if valve is not yet open
@@ -78,6 +87,7 @@ fn step(
                 valves,
                 open_valves_new,
                 results,
+                best_path,
             );
         }
     }
@@ -87,11 +97,11 @@ fn part1() -> usize {
     let valves = parse_valves(INPUT);
     println!("{:?}", valves);
 
-    let mut pressure_per_minute: usize = 0;
-    let mut pressure_total: usize = 0;
-    let mut valve = valves.get("AA").unwrap();
-    let mut open_valves: HashSet<&str> = HashSet::new();
+    let pressure_per_minute: usize = 0;
+    let pressure_total: usize = 0;
+    let open_valves: HashSet<&str> = HashSet::new();
     let mut results: Vec<usize> = Vec::new();
+    let mut best_path: HashMap<(&str, usize), usize> = HashMap::new();
     step(
         30,
         pressure_per_minute,
@@ -100,9 +110,10 @@ fn part1() -> usize {
         &valves,
         open_valves.clone(),
         &mut results,
+        &mut best_path,
     );
 
-    *results.iter().min().unwrap()
+    *results.iter().max().unwrap()
 }
 
 fn part2() -> usize {
