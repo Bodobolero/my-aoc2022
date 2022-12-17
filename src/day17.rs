@@ -3,6 +3,10 @@
 extern crate test;
 const INPUT: &str = include_str!("../inputs/input17.txt");
 
+const MAX_ROCKS: usize = 2022;
+// const MAX_ROCKS2: usize = 1000000000000;
+const MAX_ROCKS2: usize = 1000000000;
+
 const ROCKS: &str = r#"####
 
 .#.
@@ -26,7 +30,7 @@ const WIDTH: usize = 7;
 #[derive(Debug)]
 struct Rock {
     bits: Vec<u8>,
-    width: i32, // bits start at bit 4 until 4-width
+    width: i64, // bits start at bit 4 until 4-width
 }
 
 /** we represent the rock patters as bit patterns
@@ -40,10 +44,10 @@ fn parse_rocks() -> Vec<Rock> {
     let mut rocks: Vec<Rock> = Vec::new();
     for rlines in ROCKS.split("\n\n") {
         let mut rock: Vec<u8> = Vec::new();
-        let mut width: i32 = 0;
+        let mut width: i64 = 0;
         for rline in rlines.lines() {
             let mut row: u8 = 0;
-            width = rline.bytes().count() as i32;
+            width = rline.bytes().count() as i64;
             for (i, byte) in rline.bytes().enumerate() {
                 let bit = match byte {
                     b'.' => 0u8,
@@ -59,7 +63,7 @@ fn parse_rocks() -> Vec<Rock> {
     rocks
 }
 
-fn moved_bits(x: i32, bits: u8) -> u8 {
+fn moved_bits(x: i64, bits: u8) -> u8 {
     let delta = x - 6;
     if delta > 0 {
         bits << delta
@@ -89,25 +93,23 @@ fn print_cave(cave: &Vec<u8>, rocks: usize) {
     println!("+-------+");
 }
 
-// our coordinates are x: 0..6 from right to left
-// and 0..top from bottom to top
-fn part1() -> i32 {
+fn run(max: usize) -> i64 {
     let rocks = parse_rocks();
     // println!("Rocks: {:?}", rocks);
-    let mut top = -1i32;
+    let mut top = -1i64;
     // vector of positions taken, each bit represents one position,
     // index 0 is bottom, 1 grows from bottom to top
     // we leave room for 2022 rocks each max height of 4 stacked on each other
-    let mut cave: Vec<u8> = vec![0; 2022 * 4];
+    let mut cave: Vec<u8> = vec![0; max * 4];
     let mut i_push = 0;
     let mut num_pushes = INPUT.as_bytes().len();
 
     // 2022 iterations
-    for i in 0..2022 {
+    for i in 0..max {
         // print_cave(&cave, i);
         let r = i % rocks.len();
         let rock = &rocks[r];
-        let height = rock.bits.len() as i32;
+        let height = rock.bits.len() as i64;
         // position of rock related to its top left (might be true or false)
         // the two positions to the right are already included in the rock's
         // encoding
@@ -125,10 +127,10 @@ fn part1() -> i32 {
                 // check if there is any collision with (try_x, y)
                 let mut collision = false;
                 for (row, bits) in rock.bits.iter().enumerate() {
-                    let overlay = moved_bits(try_x, *bits) & cave[(y - row as i32) as usize];
+                    let overlay = moved_bits(try_x, *bits) & cave[(y - row as i64) as usize];
                     // println!("row {row} overlay {overlay}");
                     collision = collision
-                        || ((moved_bits(try_x, *bits) & cave[(y - row as i32) as usize]) != 0u8);
+                        || ((moved_bits(try_x, *bits) & cave[(y - row as i64) as usize]) != 0u8);
                     // println!("collision after row {row} is {collision}");
                 }
                 if !collision {
@@ -144,7 +146,7 @@ fn part1() -> i32 {
                 // check if there is any collision with (x, try_y)
                 for (row, bits) in rock.bits.iter().enumerate() {
                     collision = collision
-                        || (moved_bits(x, *bits) & cave[(try_y - row as i32) as usize] != 0u8);
+                        || (moved_bits(x, *bits) & cave[(try_y - row as i64) as usize] != 0u8);
                 }
                 if !collision {
                     y = try_y;
@@ -157,7 +159,7 @@ fn part1() -> i32 {
                 // add rock to cave at current position and
                 // break loop of pushes
                 for (row, bits) in rock.bits.iter().enumerate() {
-                    cave[(y - row as i32) as usize] |= moved_bits(x, *bits);
+                    cave[(y - row as i64) as usize] |= moved_bits(x, *bits);
                 }
                 if y > top {
                     top = y;
@@ -170,8 +172,14 @@ fn part1() -> i32 {
     top + 1
 }
 
-fn part2() -> usize {
-    0
+// our coordinates are x: 0..6 from right to left
+// and 0..top from bottom to top
+fn part1() -> i64 {
+    run(MAX_ROCKS)
+}
+
+fn part2() -> i64 {
+    run(MAX_ROCKS2)
 }
 
 pub fn main() {
@@ -186,7 +194,7 @@ mod tests {
 
     #[test]
     fn part1_test() {
-        assert_eq!(part1(), 3068);
+        assert_eq!(part1(), 3179);
     }
     #[test]
     fn part2_test() {
