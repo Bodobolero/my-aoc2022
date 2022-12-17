@@ -5,7 +5,7 @@ const INPUT: &str = include_str!("../inputs/input17.txt");
 
 const MAX_ROCKS: usize = 2022;
 // const MAX_ROCKS2: usize = 1000000000000;
-const MAX_ROCKS2: usize = 1000000000;
+const MAX_ROCKS2: usize = 100000000;
 
 const ROCKS: &str = r#"####
 
