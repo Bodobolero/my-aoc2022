@@ -1,7 +1,5 @@
 #![feature(test)]
 
-use std::collections::HashSet;
-
 extern crate test;
 const INPUT: &str = include_str!("../inputs/input18.txt");
 
@@ -11,9 +9,9 @@ fn scan_cubes() -> Vec<[i8; 3]> {
         .map(|line| {
             let mut num_iterator = line.split(',').map(|s| s.parse::<i8>().unwrap());
             [
-                num_iterator.next().unwrap(),
-                num_iterator.next().unwrap(),
-                num_iterator.next().unwrap(),
+                num_iterator.next().unwrap() + 1,
+                num_iterator.next().unwrap() + 1,
+                num_iterator.next().unwrap() + 1,
             ]
         })
         .collect()
@@ -35,87 +33,92 @@ fn part1() -> usize {
     free_sides
 }
 
-fn traverse(
-    cube: usize,
-    cubes: &Vec<[i8; 3]>,
-    reached: &mut Vec<bool>,
-    sides: &Vec<Vec<Option<usize>>>,
-    steam: &mut HashSet<[i8; 3]>,
-) -> usize {
-    if reached[cube] {
-        return 0;
-    };
-    let mut free_sides: usize = 0;
-    reached[cube] = true;
-    let mut cube_sides: usize = 6;
-    for k in 0..6 {
-        let side = sides[cube][k];
-        if side.is_none() {
-            // check if side reachable by steam
-            let mut space = cubes[cube];
-            let val = if k > 3 { 1 } else { -1 };
-            let index = k % 3;
-            space[index] += val;
-            if !steam.contains(&space) {}
-        }
-    }
-    for k in 0..6 {
-        let side = sides[cube][k];
-        if side.is_some() {
-            cube_sides -= 1;
-            if (!reached[side.unwrap()]) {
-                free_sides += traverse(side.unwrap(), cubes, reached, sides, steam);
+#[derive(Clone, PartialEq)]
+enum Droplet {
+    Air,
+    Lava,
+    Steam,
+}
+
+fn steam(x: usize, y: usize, z: usize, grid: &mut Vec<Vec<Vec<Droplet>>>, minmax: &[usize; 6]) {
+    let directions: [[i32; 3]; 6] = [
+        [-1, 0, 0],
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 1, 0],
+        [0, 0, -1],
+        [0, 0, 1],
+    ];
+    'dir: for d in directions {
+        let newpos = [x as i32 + d[0], y as i32 + d[1], z as i32 + d[2]];
+        for i in 0..3 {
+            if newpos[i] < minmax[i * 2] as i32 {
+                continue 'dir;
             }
-        } else {
-            // check if side reachable by steam
+            if newpos[i] > minmax[i * 2 + 1] as i32 {
+                continue 'dir;
+            }
+        }
+        // println!("check {:?} for lava", newpos);
+        if grid[newpos[0] as usize][newpos[1] as usize][newpos[2] as usize] == Droplet::Air {
+            // println!("steam {:?}", newpos);
+            grid[newpos[0] as usize][newpos[1] as usize][newpos[2] as usize] = Droplet::Steam;
+            steam(
+                newpos[0] as usize,
+                newpos[1] as usize,
+                newpos[2] as usize,
+                grid,
+                minmax,
+            );
         }
     }
-    free_sides + cube_sides
 }
 
 fn part2() -> usize {
     let cubes = scan_cubes();
-    // sides: -x, +x, -y, +y, -z, +z
-    let mut sides: Vec<Vec<Option<usize>>> = vec![vec![None; 6]; cubes.len()];
-    // build grid
-    for (i, c1) in cubes.iter().enumerate() {
-        for (j, c2) in cubes.iter().enumerate() {
-            let distance = (c1[0] - c2[0]).abs() + (c1[1] - c2[1]).abs() + (c1[2] - c2[2]).abs();
-            if distance == 1 {
-                for k in 0..3 {
-                    if c1[k] < c2[k] {
-                        sides[i][k * 2] = Some(j);
-                    }
-                    if c1[k] > c2[k] {
-                        sides[i][k * 2 + 1] = Some(j);
-                    }
-                }
+    // minimum for sides: -x, +x, -y, +y, -z, +z
+    let minmax = [
+        (cubes.iter().map(|c| c[0]).min().unwrap() - 1) as usize,
+        (cubes.iter().map(|c| c[0]).max().unwrap() + 1) as usize,
+        (cubes.iter().map(|c| c[1]).min().unwrap() - 1) as usize,
+        (cubes.iter().map(|c| c[1]).max().unwrap() + 1) as usize,
+        (cubes.iter().map(|c| c[2]).min().unwrap() - 1) as usize,
+        (cubes.iter().map(|c| c[2]).max().unwrap() + 1) as usize,
+    ];
+    // println!("minmax: {:?}", minmax);
+
+    // we surround by one layer of steam
+    let mut grid: Vec<Vec<Vec<Droplet>>> =
+        vec![
+            vec![vec![Droplet::Air; minmax[5] - minmax[4] + 2]; minmax[3] - minmax[2] + 2];
+            minmax[1] - minmax[0] + 2
+        ];
+    for c in &cubes {
+        grid[c[0] as usize][c[1] as usize][c[2] as usize] = Droplet::Lava;
+    }
+    grid[minmax[0]][minmax[2]][minmax[4]] = Droplet::Steam;
+    steam(minmax[0], minmax[2], minmax[4], &mut grid, &minmax);
+    let mut steam_sides: usize = 0;
+    let directions: [[i32; 3]; 6] = [
+        [-1, 0, 0],
+        [1, 0, 0],
+        [0, -1, 0],
+        [0, 1, 0],
+        [0, 0, -1],
+        [0, 0, 1],
+    ];
+
+    for c in &cubes {
+        for d in directions {
+            let newpos = [c[0] as i32 + d[0], c[1] as i32 + d[1], c[2] as i32 + d[2]];
+
+            if grid[newpos[0] as usize][newpos[1] as usize][newpos[2] as usize] == Droplet::Steam {
+                steam_sides += 1;
             }
         }
     }
-    let mut reached: Vec<bool> = vec![false; cubes.len()];
-    let mut free_sides: usize = 0;
-    // collect free sides reachable from the outside
-    while reached.iter().filter(|b| true).count() < reached.len() {
-        let mut steam: HashSet<[i8; 3]> = HashSet::new();
-        // find a cube at the outside of connected graph with minimum x
-        let minx = cubes
-            .iter()
-            .enumerate()
-            .filter(|&(i, c)| !reached[i])
-            .map(|(i, c)| c[0])
-            .min()
-            .unwrap();
 
-        let (ci, c) = cubes
-            .iter()
-            .enumerate()
-            .find(|&(i, c)| c[0] == minx)
-            .unwrap();
-        steam.insert([minx - 1, c[1], c[2]]);
-        free_sides += traverse(ci, &cubes, &mut reached, &mut sides, &mut steam);
-    }
-    free_sides
+    steam_sides
 }
 
 pub fn main() {
@@ -134,7 +137,7 @@ mod tests {
     }
     #[test]
     fn part2_test() {
-        assert_eq!(part2(), 0);
+        assert_eq!(part2(), 2106);
     }
     #[bench]
     fn part1_bench(b: &mut Bencher) {
