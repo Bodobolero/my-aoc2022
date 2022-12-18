@@ -243,7 +243,7 @@ mod tests {
     }
     #[test]
     fn part2_test() {
-        assert_eq!(part2(), 0);
+        assert_eq!(part2(), 1567723342929);
     }
     #[bench]
     fn part1_bench(b: &mut Bencher) {
