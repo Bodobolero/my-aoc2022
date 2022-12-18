@@ -4,8 +4,8 @@ extern crate test;
 const INPUT: &str = include_str!("../inputs/input17.txt");
 
 const MAX_ROCKS: usize = 2022;
-// const MAX_ROCKS2: usize = 1000000000000;
-const MAX_ROCKS2: usize = 100000000;
+
+const MAX_ROCKS2: usize = 1000000000000;
 
 const ROCKS: &str = r#"####
 
@@ -102,10 +102,15 @@ fn run(max: usize) -> i64 {
     // we leave room for 2022 rocks each max height of 4 stacked on each other
     let mut cave: Vec<u8> = vec![0; max * 4];
     let mut i_push = 0;
-    let mut num_pushes = INPUT.as_bytes().len();
+    let num_pushes = INPUT.as_bytes().len();
+    let mut same_tops: Vec<i64> = Vec::new();
+    let mut last_i: usize = 0;
+    let mut last_top: i64 = 0;
+    let mut top_jump_total = 0;
+    let mut i = 0;
 
     // 2022 iterations
-    for i in 0..max {
+    while i < max {
         // print_cave(&cave, i);
         let r = i % rocks.len();
         let rock = &rocks[r];
@@ -116,7 +121,46 @@ fn run(max: usize) -> i64 {
         let (mut x, mut y) = (6, top + 3 + height);
 
         loop {
-            let push = INPUT.as_bytes()[i_push % num_pushes];
+            let p = i_push % num_pushes;
+            if r == p && r == 3 {
+                let mut tops: Vec<i64> = vec![0; 7];
+
+                println!("after {i} iterations we have push and rock == 3");
+                // remember state (distance of each column's top from top in cave)
+                for i2 in 0..tops.len() {
+                    // find topmost rock in column i
+                    let mut ti = top;
+                    while ti >= 0 && (cave[ti as usize] & (1 << i2)) == 0 {
+                        ti -= 1;
+                    }
+                    tops[i2] = top - ti; // distance from top
+                }
+                println!("and tops distances are {:?}", tops);
+                // if state is same as remembered state we know that each i rocks
+                // we repeat ourselves and can use that knowledge to jump i ahead!
+                if same_tops.len() > 0 && last_i != 0 {
+                    if same_tops == tops {
+                        println!("current tops same as old tops {:?}", same_tops);
+                        let i_jumps = i - last_i;
+                        let top_jumps = top - last_top;
+                        println!(
+                            "after each {} rocks we have the exact same constellation",
+                            i_jumps
+                        );
+                        println!("top increased by {} since last time", top_jumps);
+                        // so we can just jump ahead in increments of i_jumps
+                        while (i + i_jumps) < max {
+                            i += i_jumps;
+                            top_jump_total += top_jumps;
+                        }
+                    }
+                }
+
+                same_tops = tops;
+                last_i = i;
+                last_top = top;
+            }
+            let push = INPUT.as_bytes()[p];
             i_push += 1;
             // our coordinates go from right to left
             let xdelta = if push == b'>' { -1 } else { 1 };
@@ -168,8 +212,9 @@ fn run(max: usize) -> i64 {
                 break;
             }
         }
+        i += 1;
     }
-    top + 1
+    top + 1 + top_jump_total
 }
 
 // our coordinates are x: 0..6 from right to left
